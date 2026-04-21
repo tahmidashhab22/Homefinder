@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>HomeFinder BD | ঘর ভাড়া খুঁজুন সহজেই</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #d4eaff 100%);
+            min-height: 100vh;
+        }
+
+        /* Header / Navbar */
+        .navbar {
+            background: #0a3d2f;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .logo i {
+            color: #4cd964;
+            margin-right: 8px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        .nav-buttons button {
+            background: #1f6e43;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+        .nav-buttons button i {
+            margin-right: 6px;
+        }
+        .nav-buttons button:hover {
+            background: #2c8b5a;
+            transform: translateY(-2px);
+        }
+        .add-active {
+            background: #0284c7 !important;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Search + Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 60px;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .search-box {
+            flex: 2;
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 50px;
+            padding: 0.3rem 1rem;
+        }
+        .search-box i {
+            color: #2c6e4f;
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 12px;
+            width: 100%;
+            font-size: 1rem;
+            outline: none;
+        }
+        .rent-filter {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 0.3rem 1.2rem;
+            border-radius: 50px;
+        }
+        .rent-filter label {
+            font-weight: 500;
+            color: #0a3d2f;
+        }
+        .rent-filter input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 30px;
+            outline: none;
+        }
+        .filter-bar button {
+            background: #0f766e;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Form Section - Add House */
+        .form-card {
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .form-title {
+            font-size: 1.6rem;
+            color: #0a3d2f;
+            margin-bottom: 1.2rem;
+            border-left: 5px solid #2c9b77;
+            padding-left: 1rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.2rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #1f4e3a;
+        }
+        .form-group input, .form-group textarea {
+            padding: 12px;
+            border: 1px solid #cbd5e6;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 2px rgba(15,118,110,0.2);
+        }
+        .btn-submit {
+            background: #0a3d2f;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            background: #1f6e43;
+        }
+
+        /* Houses Grid */
+        .houses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+        .house-card {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .house-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 28px rgba(0,0,0,0.12);
+        }
+        .house-img {
+            width: 100%;
+            height: 170px;
+            background: linear-gradient(145deg, #b9e0c5, #9bc4cb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c5e3f;
+            font-size: 3rem;
+        }
+        .house-details {
+            padding: 1.2rem 1.2rem 1.5rem;
+        }
+        .house-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0a3d2f;
+            margin-bottom: 0.5rem;
+        }
+        .rent-price {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #0284c7;
+            margin: 8px 0;
+        }
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+            color: #2c4f3a;
+            font-size: 0.9rem;
+        }
+        .info-row i {
+            width: 24px;
+            color: #0f766e;
+        }
+        .description {
+            color: #475569;
+            margin: 10px 0;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        .contact-btn {
+            background: #eef2ff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            margin-top: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0a3d2f;
+        }
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            margin-top: 8px;
+            margin-left: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .delete-btn:hover {
+            background: #b91c1c;
+            transform: scale(1.02);
+        }
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: 0.2s;
+            color: #dc2626;
+            z-index: 10;
+        }
+        .favorite-btn.active {
+            background: #dc2626;
+            color: white;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 28px;
+            color: #4b6a5c;
+            font-size: 1.2rem;
+        }
+        /* Action buttons container */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #1f5e46;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .filter-bar {
+                flex-direction: column;
+                border-radius: 30px;
+                align-items: stretch;
+            }
+            .rent-filter {
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // ========== STORAGE KEYS ==========
+        const STORAGE_KEY = "homefinder_houses";
+        const FAVORITES_KEY = "homefinder_favorites";
+
+        // ========== Sample Default Houses ==========
+        const DEFAULT_HOUSES = [
+            { id: 1001, title: "সুন্দর পরিবারিক অ্যাপার্টমেন্ট", rent: 18500, location: "বসুন্ধরা, ঢাকা", rooms: 3, description: "সুন্দর দৃশ্য, নিরাপদ এলাকা, ২৪ ঘন্টা সিসিটিভি।", phone: "01712-345678", imageIcon: "🏠" },
+            { id: 1002, title: "ছোট পরিবারের জন্য ফ্ল্যাট", rent: 12500, location: "খিলক্ষেত, ঢাকা", rooms: 2, description: "বিদ্যালয় ও বাজারের কাছাকাছি, গাড়ি পার্কিং সুবিধা।", phone: "01876-543219", imageIcon: "🏘️" },
+            { id: 1003, title: "মেস / বেসরকারি রুম", rent: 5500, location: "মিরপুর-১২, ঢাকা", rooms: 1, description: "ছাত্রদের জন্য উপযুক্ত, ওয়াইফাই ও খাবারের ব্যবস্থা।", phone: "01988-123456", imageIcon: "🛏️" },
+            { id: 1004, title: "সেমি-ফার্নিশড বাড়ি", rent: 22500, location: "গুলশান-২, ঢাকা", rooms: 4, description: "বিলাসবহুল, পার্কের পাশে, রেস্তোরাঁর কাছাকাছি।", phone: "01555-789012", imageIcon: "🏡" }
+        ];
+
+        // Load houses from localStorage or init defaults
+        function loadHouses() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                return JSON.parse(stored);
+            } else {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_HOUSES));
+                return [...DEFAULT_HOUSES];
+            }
+        }
+
+        function saveHouses(houses) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(houses));
+        }
+
+        // Favorites logic
+        function loadFavorites() {
+            const fav = localStorage.getItem(FAVORITES_KEY);
+            return fav ? JSON.parse(fav) : [];
+        }
+
+        function saveFavorites(favorites) {
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+        }
+
+        function toggleFavorite(houseId) {
+            let favorites = loadFavorites();
+            if (favorites.includes(houseId)) {
+                favorites = favorites.filter(id => id !== houseId);
+            } else {
+                favorites.push(houseId);
+            }
+            saveFavorites(favorites);
+            renderApp();
+        }
+
+        // ========== DELETE FUNCTION - NEWLY ADDED ==========
+        function deleteHouse(houseId) {
+            // Confirmation dialog
+            if (confirm("আপনি কি এই লিস্টিংটি ডিলিট করতে চান?")) {
+                const houses = loadHouses();
+                const houseToDelete = houses.find(h => h.id === houseId);
+                
+                if (houseToDelete) {
+                    // Remove the house
+                    const updatedHouses = houses.filter(h => h.id !== houseId);
+                    saveHouses(updatedHouses);
+                    
+                    // Also remove from favorites if exists
+                    let favorites = loadFavorites();
+                    favorites = favorites.filter(id => id !== houseId);
+                    saveFavorites(favorites);
+                    
+                    // Refresh the UI
+                    renderApp();
+                    alert(`"${houseToDelete.title}" সফলভাবে ডিলিট করা হয়েছে!`);
+                } else {
+                    alert("বাড়িটি পাওয়া যায়নি!");
+                }
+            }
+        }
+
+        // Add new house
+        function addHouse(houseData) {
+            const houses = loadHouses();
+            const newHouse = {
+                id: Date.now(),
+                title: houseData.title,
+                rent: parseFloat(houseData.rent),
+                location: houseData.location,
+                rooms: parseInt(houseData.rooms),
+                description: houseData.description,
+                phone: houseData.phone,
+                imageIcon: houseData.imageIcon || "🏠"
+            };
+            houses.push(newHouse);
+            saveHouses(houses);
+            renderApp();
+            alert("✅ নতুন লিস্টিং সফলভাবে যোগ করা হয়েছে!");
+        }
+
+        // Global state
+        let showAddForm = false;
+        let searchLocation = "";
+        let minRent = "";
+        let maxRent = "";
+
+        // Render App
+        function renderApp() {
+            const appDiv = document.getElementById("app");
+            const houses = loadHouses();
+            const favorites = loadFavorites();
+
+            // Filter houses
+            let filtered = [...houses];
+            if (searchLocation.trim() !== "") {
+                const locQuery = searchLocation.toLowerCase().trim();
+                filtered = filtered.filter(house => house.location.toLowerCase().includes(locQuery));
+            }
+            if (minRent !== "") {
+                const minVal = parseFloat(minRent);
+                if (!isNaN(minVal)) filtered = filtered.filter(house => house.rent >= minVal);
+            }
+            if (maxRent !== "") {
+                const maxVal = parseFloat(maxRent);
+                if (!isNaN(maxVal)) filtered = filtered.filter(house => house.rent <= maxVal);
+            }
+
+            const formHtml = showAddForm ? `
+                <div class="form-card">
+                    <div class="form-title"><i class="fas fa-plus-circle"></i> নতুন বাড়ির লিস্টিং যোগ করুন</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>শিরোনাম / টাইটেল *</label>
+                            <input type="text" id="houseTitle" placeholder="যেমন: পরিবারিক অ্যাপার্টমেন্ট">
+                        </div>
+                        <div class="form-group">
+                            <label>ভাড়া (৳) *</label>
+                            <input type="number" id="houseRent" placeholder="ভাড়া টাকায়">
+                        </div>
+                        <div class="form-group">
+                            <label>অবস্থান *</label>
+                            <input type="text" id="houseLocation" placeholder="যেমন: বসুন্ধরা, ঢাকা">
+                        </div>
+                        <div class="form-group">
+                            <label>রুমের সংখ্যা *</label>
+                            <input type="number" id="houseRooms" placeholder="১,২,৩...">
+                        </div>
+                        <div class="form-group">
+                            <label>বিবরণ</label>
+                            <textarea id="houseDesc" rows="2" placeholder="বাড়ির বিশেষ সুবিধা..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>যোগাযোগ নম্বর *</label>
+                            <input type="tel" id="housePhone" placeholder="০১XXXXXXXXX">
+                        </div>
+                    </div>
+                    <button class="btn-submit" id="submitHouseBtn"><i class="fas fa-save"></i> লিস্টিং সংরক্ষণ করুন</button>
+                </div>
+            ` : "";
+
+            const housesHtml = `
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="searchLocationInput" placeholder="অবস্থান দ্বারা খুঁজুন (যেমন: গুলশান, মিরপুর)..." value="${escapeHtml(searchLocation)}">
+                    </div>
+                    <div class="rent-filter">
+                        <label>ভাড়া সীমা:</label>
+                        <input type="number" id="minRentInput" placeholder="ন্যূনতম" value="${minRent}">
+                        <span>-</span>
+                        <input type="number" id="maxRentInput" placeholder="সর্বোচ্চ" value="${maxRent}">
+                    </div>
+                    <button id="applyFilterBtn"><i class="fas fa-sliders-h"></i> ফিল্টার</button>
+                </div>
+                <div class="houses-grid" id="housesGrid">
+                    ${filtered.length === 0 ? `<div class="empty-message"><i class="fas fa-home"></i> কোনো বাড়ি পাওয়া যায়নি! <br> "নতুন লিস্টিং যোগ করুন" বাটনে ক্লিক করে বাড়ি যোগ করুন।</div>` : 
+                        filtered.map(house => {
+                            const isFav = favorites.includes(house.id);
+                            return `
+                                <div class="house-card" data-id="${house.id}">
+                                    <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${house.id}">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    <div class="house-img">
+                                        <i class="fas fa-building" style="font-size: 4rem;"></i>
+                                        <span style="font-size: 2.5rem; margin-left: 10px;">${house.imageIcon || '🏠'}</span>
+                                    </div>
+                                    <div class="house-details">
+                                        <div class="house-title">${escapeHtml(house.title)}</div>
+                                        <div class="rent-price">৳ ${house.rent.toLocaleString()}</div>
+                                        <div class="info-row"><i class="fas fa-location-dot"></i> 📍 ${escapeHtml(house.location)}</div>
+                                        <div class="info-row"><i class="fas fa-door-open"></i> 🚪 ${house.rooms} টি রুম</div>
+                                        <div class="description"><i class="fas fa-info-circle"></i> ${escapeHtml(house.description.substring(0, 90))}${house.description.length > 90 ? '...' : ''}</div>
+                                        <div class="action-buttons">
+                                            <button class="contact-btn" data-phone="${house.phone}"><i class="fas fa-phone-alt"></i> যোগাযোগ</button>
+                                            <button class="delete-btn" data-id="${house.id}"><i class="fas fa-trash-alt"></i> ডিলিট</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')
+                    }
+                </div>
+            `;
+
+            const fullHtml = `
+                <nav class="navbar">
+                    <div class="logo"><i class="fas fa-home"></i> HomeFinder BD</div>
+                    <div class="nav-buttons">
+                        <button id="toggleFormBtn" class="${showAddForm ? 'add-active' : ''}">
+                            <i class="fas ${showAddForm ? 'fa-times' : 'fa-plus'}"></i> 
+                            ${showAddForm ? 'বন্ধ করুন' : 'নতুন লিস্টিং যোগ করুন'}
+                        </button>
+                    </div>
+                </nav>
+                <div class="container">
+                    ${formHtml}
+                    <div class="houses-section">
+                        <h2 style="color:#0a3d2f; margin-bottom: 1rem;"><i class="fas fa-list-ul"></i> উপলব্ধ ভাড়া বাড়ি (${filtered.length})</h2>
+                        ${housesHtml}
+                    </div>
+                </div>
+                <footer>
+                    <i class="fas fa-search-location"></i> HomeFinder BD — সহজে ভাড়া বাসা খুঁজুন | সারা বাংলাদেশ
+                </footer>
+            `;
+            
+            appDiv.innerHTML = fullHtml;
+            attachEvents();
+        }
+
+        function attachEvents() {
+            // Toggle form button
+            const toggleBtn = document.getElementById("toggleFormBtn");
+            if (toggleBtn) {
+                toggleBtn.addEventListener("click", () => {
+                    showAddForm = !showAddForm;
+                    renderApp();
+                });
+            }
+
+            // Submit new house
+            const submitBtn = document.getElementById("submitHouseBtn");
+            if (submitBtn) {
+                submitBtn.addEventListener("click", () => {
+                    const title = document.getElementById("houseTitle")?.value.trim();
+                    const rent = document.getElementById("houseRent")?.value.trim();
+                    const location = document.getElementById("houseLocation")?.value.trim();
+                    const rooms = document.getElementById("houseRooms")?.value.trim();
+                    const description = document.getElementById("houseDesc")?.value.trim();
+                    const phone = document.getElementById("housePhone")?.value.trim();
+
+                    if (!title || !rent || !location || !rooms || !phone) {
+                        alert("দয়া করে সব প্রয়োজনীয় তথ্য পূরণ করুন (শিরোনাম, ভাড়া, অবস্থান, রুম সংখ্যা, ফোন নম্বর)");
+                        return;
+                    }
+                    if (isNaN(parseFloat(rent)) || parseFloat(rent) <= 0) {
+                        alert("সঠিক ভাড়ার পরিমাণ দিন (টাকায়)");
+                        return;
+                    }
+                    if (isNaN(parseInt(rooms)) || parseInt(rooms) <= 0) {
+                        alert("সঠিক রুম সংখ্যা দিন");
+                        return;
+                    }
+                    addHouse({
+                        title,
+                        rent: parseFloat(rent),
+                        location,
+                        rooms: parseInt(rooms),
+                        description: description || "কোনো বিবরণ নেই",
+                        phone,
+                        imageIcon: "🏡"
+                    });
+                    showAddForm = false;
+                });
+            }
+
+            // Filter events
+            const applyFilter = document.getElementById("applyFilterBtn");
+            if (applyFilter) {
+                applyFilter.addEventListener("click", () => {
+                    const locInput = document.getElementById("searchLocationInput");
+                    const minInput = document.getElementById("minRentInput");
+                    const maxInput = document.getElementById("maxRentInput");
+                    searchLocation = locInput ? locInput.value : "";
+                    minRent = minInput ? minInput.value : "";
+                    maxRent = maxInput ? maxInput.value : "";
+                    renderApp();
+                });
+            }
+
+            // Favorite buttons
+            document.querySelectorAll(".favorite-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const houseId = parseInt(btn.getAttribute("data-id"));
+                    if (!isNaN(houseId)) toggleFavorite(houseId);
+                });
+            });
+
+            // ========== DELETE BUTTONS - NEW EVENT HANDLER ==========
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const houseId = parseInt(btn.getAttribute("data-id"));
+                    if (!isNaN(houseId)) {
+                        deleteHouse(houseId);
+                    }
+                });
+            });
+
+            // Contact buttons
+            document.querySelectorAll(".contact-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const phone = btn.getAttribute("data-phone");
+                    if (phone) {
+                        alert(`📞 মালিকের যোগাযোগ নম্বর: ${phone}\nকপি করুন এবং কল করুন।`);
+                    } else {
+                        alert("নম্বর পাওয়া যায়নি");
+                    }
+                });
+            });
+        }
+
+        // Escape HTML to avoid XSS
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Initialize app
+        function init() {
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_HOUSES));
+            }
+            if (!localStorage.getItem(FAVORITES_KEY)) {
+                localStorage.setItem(FAVORITES_KEY, JSON.stringify([]));
+            }
+            renderApp();
+        }
+
+        init();
+    </script>
+</body>
+</html>
