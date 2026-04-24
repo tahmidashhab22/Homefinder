@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>HomeFinder BD | সম্পূর্ণ হাউজ ভাড়া প্ল্যাটফর্ম</title>
-    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <title>HomeFinder BD | জুম যোগ্য ছবি সহ সম্পূর্ণ হাউজ প্ল্যাটফর্ম</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
     <style>
         * {
             margin: 0;
@@ -218,8 +216,8 @@
         }
         .preview-card {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -321,18 +319,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-        .gallery-nav {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            z-index: 5;
         }
         .image-counter {
             position: absolute;
@@ -480,7 +466,7 @@
             margin-bottom: 2rem;
         }
 
-        /* Fullscreen Lightbox with Navigation Arrows */
+        /* ========== ZOOMABLE LIGHTBOX WITH FULLSCREEN IMAGE ========== */
         .lightbox {
             position: fixed;
             top: 0;
@@ -508,11 +494,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            touch-action: none;
         }
         .lightbox-img {
             max-width: 95%;
             max-height: 95%;
             object-fit: contain;
+            transition: transform 0.1s ease;
+            cursor: grab;
+            transform-origin: center center;
+        }
+        .lightbox-img:active {
+            cursor: grabbing;
         }
         .close-lightbox {
             position: absolute;
@@ -529,24 +523,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .lightbox-nav {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            z-index: 2001;
-        }
-        .lightbox-nav button {
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            margin: 0 10px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 1rem;
         }
         .lightbox-arrow {
             position: absolute;
@@ -569,12 +545,8 @@
         .lightbox-arrow:hover {
             background: rgba(0,0,0,0.8);
         }
-        .lightbox-arrow-left {
-            left: 20px;
-        }
-        .lightbox-arrow-right {
-            right: 20px;
-        }
+        .lightbox-arrow-left { left: 20px; }
+        .lightbox-arrow-right { right: 20px; }
         .lightbox-counter {
             position: absolute;
             top: 20px;
@@ -584,6 +556,16 @@
             padding: 8px 18px;
             border-radius: 30px;
             font-size: 0.9rem;
+            z-index: 2001;
+        }
+        .zoom-instruction {
+            position: absolute;
+            bottom: 100px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.7rem;
             z-index: 2001;
         }
 
@@ -665,10 +647,6 @@
             }
             .lightbox-arrow-left { left: 10px; }
             .lightbox-arrow-right { right: 10px; }
-            .lightbox-nav button {
-                padding: 8px 18px;
-                font-size: 0.8rem;
-            }
         }
     </style>
 </head>
@@ -900,9 +878,15 @@
         let authError = "";
         let tempOptimizedImages = [];
         
-        // Lightbox state
+        // Lightbox state with zoom
         let currentLightboxImages = [];
         let currentLightboxIndex = 0;
+        let currentZoom = 1;
+        let currentPan = { x: 0, y: 0 };
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let panStart = { x: 0, y: 0 };
+        let lastTapTime = 0;
 
         async function handleImageUpload(files) {
             if (tempOptimizedImages.length + files.length > MAX_IMAGES) {
@@ -931,12 +915,14 @@
             renderApp();
         }
 
-        // ========== FULLSCREEN LIGHTBOX WITH NAVIGATION ARROWS ==========
+        // ========== ZOOMABLE LIGHTBOX WITH PINCH AND DOUBLE TAP ==========
         function showLightbox(images, startIndex) {
             if (!images || images.length === 0) return;
             
             currentLightboxImages = images;
             currentLightboxIndex = startIndex;
+            currentZoom = 1;
+            currentPan = { x: 0, y: 0 };
             
             let lightbox = document.getElementById("globalLightbox");
             if (!lightbox) {
@@ -946,47 +932,152 @@
                 lightbox.innerHTML = `
                     <span class="close-lightbox"><i class="fas fa-times"></i></span>
                     <div class="lightbox-counter" id="lightboxCounter"></div>
-                    <div class="lightbox-container">
+                    <div class="lightbox-container" id="lightboxContainer">
                         <img id="lightboxImg" class="lightbox-img" src="" alt="Fullscreen Image">
                     </div>
                     <button class="lightbox-arrow lightbox-arrow-left" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
                     <button class="lightbox-arrow lightbox-arrow-right" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
-                    <div class="lightbox-nav">
-                        <button id="lightboxNavPrev"><i class="fas fa-chevron-left"></i> আগের</button>
-                        <button id="lightboxNavNext">পরের <i class="fas fa-chevron-right"></i></button>
-                    </div>
+                    <div class="zoom-instruction">👆 পিনচ করে জুম করুন | ডাবল ট্যাপ করেও জুম করুন</div>
                 `;
                 document.body.appendChild(lightbox);
             }
             
             const lightboxImg = document.getElementById("lightboxImg");
             const counter = document.getElementById("lightboxCounter");
+            const container = document.getElementById("lightboxContainer");
             const closeBtn = document.querySelector(".close-lightbox");
             const prevBtn = document.getElementById("lightboxPrev");
             const nextBtn = document.getElementById("lightboxNext");
-            const navPrevBtn = document.getElementById("lightboxNavPrev");
-            const navNextBtn = document.getElementById("lightboxNavNext");
             
             const updateLightbox = () => {
                 lightboxImg.src = currentLightboxImages[currentLightboxIndex];
                 counter.innerText = `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
+                resetZoom();
             };
             
+            const resetZoom = () => {
+                currentZoom = 1;
+                currentPan = { x: 0, y: 0 };
+                lightboxImg.style.transform = `scale(${currentZoom}) translate(${currentPan.x}px, ${currentPan.y}px)`;
+            };
+            
+            // Zoom with wheel
+            const handleWheel = (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                let newZoom = currentZoom + delta;
+                newZoom = Math.min(Math.max(newZoom, 0.5), 3);
+                if (newZoom !== currentZoom) {
+                    currentZoom = newZoom;
+                    lightboxImg.style.transform = `scale(${currentZoom}) translate(${currentPan.x}px, ${currentPan.y}px)`;
+                }
+            };
+            
+            // Double tap to zoom
+            const handleDoubleTap = (e) => {
+                e.preventDefault();
+                if (currentZoom > 1) {
+                    resetZoom();
+                } else {
+                    currentZoom = 2;
+                    currentPan = { x: 0, y: 0 };
+                    lightboxImg.style.transform = `scale(${currentZoom}) translate(${currentPan.x}px, ${currentPan.y}px)`;
+                }
+            };
+            
+            // Drag to pan
+            const handleMouseDown = (e) => {
+                if (currentZoom <= 1) return;
+                isDragging = true;
+                dragStart = { x: e.clientX, y: e.clientY };
+                panStart = { ...currentPan };
+                lightboxImg.style.cursor = 'grabbing';
+                e.preventDefault();
+            };
+            
+            const handleMouseMove = (e) => {
+                if (!isDragging || currentZoom <= 1) return;
+                const dx = e.clientX - dragStart.x;
+                const dy = e.clientY - dragStart.y;
+                currentPan = { x: panStart.x + dx, y: panStart.y + dy };
+                lightboxImg.style.transform = `scale(${currentZoom}) translate(${currentPan.x}px, ${currentPan.y}px)`;
+            };
+            
+            const handleMouseUp = () => {
+                isDragging = false;
+                lightboxImg.style.cursor = 'grab';
+            };
+            
+            // Touch events for pinch zoom
+            let touchStartDistance = 0;
+            let touchStartZoom = 1;
+            
+            const getTouchDistance = (touches) => {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            };
+            
+            const handleTouchStart = (e) => {
+                if (e.touches.length === 2) {
+                    touchStartDistance = getTouchDistance(e.touches);
+                    touchStartZoom = currentZoom;
+                    e.preventDefault();
+                } else if (e.touches.length === 1 && currentZoom > 1) {
+                    isDragging = true;
+                    dragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    panStart = { ...currentPan };
+                }
+            };
+            
+            const handleTouchMove = (e) => {
+                if (e.touches.length === 2) {
+                    const newDistance = getTouchDistance(e.touches);
+                    let newZoom = touchStartZoom * (newDistance / touchStartDistance);
+                    newZoom = Math.min(Math.max(newZoom, 0.5), 3);
+                    if (newZoom !== currentZoom) {
+                        currentZoom = newZoom;
+                        lightboxImg.style.transform = `scale(${currentZoom}) translate(${currentPan.x}px, ${currentPan.y}px)`;
+                    }
+                    e.preventDefault();
+                } else if (e.touches.length === 1 && isDragging && currentZoom > 1) {
+                    const dx = e.touches[0].clientX - dragStart.x;
+                    const dy = e.touches[0].clientY - dragStart.y;
+                    currentPan = { x: panStart.x + dx, y: panStart.y + dy };
+                    lightboxImg.style.transform = `scale(${currentZoom}) translate(${currentPan.x}px, ${currentPan.y}px)`;
+                }
+            };
+            
+            const handleTouchEnd = () => {
+                isDragging = false;
+            };
+            
+            // Navigation
             const nextImage = () => {
-                if (currentLightboxImages.length <= 1) return;
                 currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
                 updateLightbox();
             };
             
             const prevImage = () => {
-                if (currentLightboxImages.length <= 1) return;
                 currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
                 updateLightbox();
             };
             
             const closeLightbox = () => {
                 lightbox.classList.remove("active");
-                document.removeEventListener('keydown', keyHandler);
+                cleanupEvents();
+            };
+            
+            const cleanupEvents = () => {
+                lightboxImg.removeEventListener('wheel', handleWheel);
+                lightboxImg.removeEventListener('dblclick', handleDoubleTap);
+                lightboxImg.removeEventListener('mousedown', handleMouseDown);
+                window.removeEventListener('mousemove', handleMouseMove);
+                window.removeEventListener('mouseup', handleMouseUp);
+                lightboxImg.removeEventListener('touchstart', handleTouchStart);
+                lightboxImg.removeEventListener('touchmove', handleTouchMove);
+                lightboxImg.removeEventListener('touchend', handleTouchEnd);
+                window.removeEventListener('keydown', keyHandler);
             };
             
             const keyHandler = (e) => {
@@ -996,53 +1087,24 @@
                 if(e.key === "Escape") closeLightbox();
             };
             
-            prevBtn.onclick = prevImage;
-            nextBtn.onclick = nextImage;
-            navPrevBtn.onclick = prevImage;
-            navNextBtn.onclick = nextImage;
+            // Attach events
+            lightboxImg.addEventListener('wheel', handleWheel, { passive: false });
+            lightboxImg.addEventListener('dblclick', handleDoubleTap);
+            lightboxImg.addEventListener('mousedown', handleMouseDown);
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            lightboxImg.addEventListener('touchstart', handleTouchStart, { passive: false });
+            lightboxImg.addEventListener('touchmove', handleTouchMove, { passive: false });
+            lightboxImg.addEventListener('touchend', handleTouchEnd);
+            window.addEventListener('keydown', keyHandler);
+            
+            prevBtn.onclick = (e) => { e.stopPropagation(); nextImage(); };
+            nextBtn.onclick = (e) => { e.stopPropagation(); prevImage(); };
             closeBtn.onclick = closeLightbox;
             lightbox.onclick = (e) => { if(e.target === lightbox) closeLightbox(); };
-            document.addEventListener('keydown', keyHandler);
             
             updateLightbox();
             lightbox.classList.add("active");
-        }
-
-        // ========== SHOW GALLERY WITH ARROWS INSIDE CARD ==========
-        function showGallery(houseId, images, startIndex) {
-            if (!images || images.length === 0) return;
-            // Create or get gallery container for this card
-            const galleryContainer = document.getElementById(`gallery-${houseId}`);
-            if (!galleryContainer) return;
-            
-            let currentIdx = startIndex;
-            const mainImg = document.getElementById(`main-img-${houseId}`);
-            const counterSpan = document.getElementById(`counter-${houseId}`);
-            
-            const updateImage = () => {
-                if (mainImg) mainImg.src = images[currentIdx];
-                if (counterSpan) counterSpan.innerText = `${currentIdx+1} / ${images.length}`;
-            };
-            
-            const leftArrow = document.getElementById(`left-arrow-${houseId}`);
-            const rightArrow = document.getElementById(`right-arrow-${houseId}`);
-            
-            if (leftArrow) {
-                leftArrow.onclick = (e) => {
-                    e.stopPropagation();
-                    currentIdx = (currentIdx - 1 + images.length) % images.length;
-                    updateImage();
-                };
-            }
-            if (rightArrow) {
-                rightArrow.onclick = (e) => {
-                    e.stopPropagation();
-                    currentIdx = (currentIdx + 1) % images.length;
-                    updateImage();
-                };
-            }
-            
-            updateImage();
         }
 
         function renderApp() {
@@ -1130,7 +1192,7 @@
             if (minRent) { let mn = parseFloat(minRent); if (!isNaN(mn)) filtered = filtered.filter(h => h.rent >= mn); }
             if (maxRent) { let mx = parseFloat(maxRent); if (!isNaN(mx)) filtered = filtered.filter(h => h.rent <= mx); }
 
-            // Preview HTML for form
+            // Preview HTML
             const previewHtml = tempOptimizedImages.length > 0 ? `
                 <div class="image-preview-grid">
                     ${tempOptimizedImages.map((img, idx) => `
@@ -1187,13 +1249,13 @@
                                 const images = house.images && house.images.length ? house.images : ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500&h=300&fit=crop"];
                                 return `
                                 <div class="house-card">
-                                    <div class="image-gallery" id="gallery-${house.id}">
-                                        <div class="gallery-main" onclick="showLightbox(${JSON.stringify(images)}, 0)">
+                                    <div class="image-gallery" onclick="showLightbox(${JSON.stringify(images)}, 0)">
+                                        <div class="gallery-main">
                                             <img src="${images[0]}" alt="house" id="main-img-${house.id}">
                                         </div>
                                         ${images.length > 1 ? `
-                                            <button class="nav-arrow nav-left" id="left-arrow-${house.id}"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="nav-arrow nav-right" id="right-arrow-${house.id}"><i class="fas fa-chevron-right"></i></button>
+                                            <button class="nav-arrow nav-left" id="left-arrow-${house.id}" onclick="event.stopPropagation();"><i class="fas fa-chevron-left"></i></button>
+                                            <button class="nav-arrow nav-right" id="right-arrow-${house.id}" onclick="event.stopPropagation();"><i class="fas fa-chevron-right"></i></button>
                                             <div class="image-counter" id="counter-${house.id}">1 / ${images.length}</div>
                                         ` : ''}
                                     </div>
@@ -1234,7 +1296,7 @@
                 <div class="welcome-message">
                     <h2><i class="fas fa-home"></i> HomeFinder BD তে স্বাগতম!</h2>
                     <p>"নতুন লিস্টিং" বাটনে ক্লিক করে প্রথম লিস্টিং তৈরি করুন</p>
-                    <p>📸 ছবিতে ক্লিক করে বড় করে দেখুন | ➡️ তীর চিহ্ন দিয়ে ছবি বদলান</p>
+                    <p>📸 ছবিতে ক্লিক করে পূর্ণ পর্দায় দেখুন | 👆 পিনচ করে জুম করুন | ➡️ তীর চিহ্ন দিয়ে ছবি বদলান</p>
                 </div>
             ` : "";
 
@@ -1260,13 +1322,13 @@
                                 <div class="house-card">
                                     ${isMine ? '<div class="my-listing-badge"><i class="fas fa-user-check"></i> আপনার লিস্টিং</div>' : ''}
                                     <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${house.id}"><i class="fas fa-heart"></i></button>
-                                    <div class="image-gallery" id="gallery-${house.id}">
-                                        <div class="gallery-main" onclick="showLightbox(${JSON.stringify(images)}, 0)">
+                                    <div class="image-gallery" onclick="showLightbox(${JSON.stringify(images)}, 0)">
+                                        <div class="gallery-main">
                                             <img src="${images[0]}" alt="house" id="main-img-${house.id}">
                                         </div>
                                         ${images.length > 1 ? `
-                                            <button class="nav-arrow nav-left" id="left-arrow-${house.id}"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="nav-arrow nav-right" id="right-arrow-${house.id}"><i class="fas fa-chevron-right"></i></button>
+                                            <button class="nav-arrow nav-left" id="left-arrow-${house.id}" onclick="event.stopPropagation();"><i class="fas fa-chevron-left"></i></button>
+                                            <button class="nav-arrow nav-right" id="right-arrow-${house.id}" onclick="event.stopPropagation();"><i class="fas fa-chevron-right"></i></button>
                                             <div class="image-counter" id="counter-${house.id}">1 / ${images.length}</div>
                                         ` : ''}
                                     </div>
@@ -1305,12 +1367,12 @@
                     ${listingFormHtml}
                     ${currentPage === "dashboard" ? dashboardHtml : (currentPage === "profile" ? profileHtml : homeHtml)}
                 </div>
-                <footer>🏠 HomeFinder BD | 🖼️ ছবিতে ক্লিক করে বড় করে দেখুন | ◀ ▶ তীর চিহ্ন দিয়ে ছবি বদলান | 📞 কল বাটনে ক্লিক করলেই সরাসরি ফোন কল হবে</footer>
+                <footer>🏠 HomeFinder BD | 📸 ছবিতে ক্লিক করে বড় করে দেখুন | 👆 পিনচ করে জুম করুন | ◀ ▶ তীর চিহ্ন দিয়ে ছবি বদলান | 📞 কল বাটনে ক্লিক করলেই সরাসরি ফোন কল হবে</footer>
             `;
             
             document.getElementById("app").innerHTML = fullHtml;
             
-            // Make showLightbox and showGallery available globally
+            // Make showLightbox available globally
             window.showLightbox = showLightbox;
             
             // Initialize gallery navigation for each house
