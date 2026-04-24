@@ -324,19 +324,22 @@
             position: absolute;
             bottom: 10px;
             right: 10px;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            padding: 8px 14px;
+            border-radius: 25px;
+            font-size: 0.8rem;
             cursor: pointer;
-            z-index: 5;
+            z-index: 15;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-weight: bold;
+            transition: 0.2s;
         }
         .gallery-nav:hover {
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
+            transform: scale(1.02);
         }
         .image-counter {
             position: absolute;
@@ -492,7 +495,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.95);
-            z-index: 2000;
+            z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -508,7 +511,7 @@
         .lightbox-container {
             position: relative;
             width: 100%;
-            height: 85%;
+            height: 80%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -523,12 +526,12 @@
             top: 20px;
             right: 30px;
             color: white;
-            font-size: 2rem;
+            font-size: 2.5rem;
             cursor: pointer;
-            z-index: 2001;
+            z-index: 10000;
             background: rgba(0,0,0,0.5);
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -538,15 +541,19 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             color: white;
             border: none;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            z-index: 2001;
-            font-size: 1.3rem;
+            z-index: 10000;
+            font-size: 1.5rem;
+            transition: 0.2s;
+        }
+        .lightbox-arrow:hover {
+            background: rgba(0,0,0,0.9);
         }
         .lightbox-arrow-left { left: 20px; }
         .lightbox-arrow-right { right: 20px; }
@@ -556,10 +563,10 @@
             left: 30px;
             color: white;
             background: rgba(0,0,0,0.5);
-            padding: 6px 15px;
+            padding: 8px 18px;
             border-radius: 30px;
-            font-size: 0.9rem;
-            z-index: 2001;
+            font-size: 1rem;
+            z-index: 10000;
         }
 
         /* Auth Modal */
@@ -634,9 +641,9 @@
                 flex-direction: column;
             }
             .lightbox-arrow {
-                width: 35px;
-                height: 35px;
-                font-size: 1rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
             .lightbox-arrow-left { left: 10px; }
             .lightbox-arrow-right { right: 10px; }
@@ -875,72 +882,83 @@
         let currentLightboxImages = [];
         let currentLightboxIndex = 0;
 
-        // Create lightbox element
-        function createLightboxIfNotExists() {
+        // ========== LIGHTBOX FUNCTIONS ==========
+        function ensureLightboxExists() {
             if (!document.getElementById("globalLightbox")) {
-                const lightbox = document.createElement("div");
-                lightbox.id = "globalLightbox";
-                lightbox.className = "lightbox";
-                lightbox.innerHTML = `
-                    <span class="close-lightbox"><i class="fas fa-times"></i></span>
+                const lightboxDiv = document.createElement("div");
+                lightboxDiv.id = "globalLightbox";
+                lightboxDiv.className = "lightbox";
+                lightboxDiv.innerHTML = `
+                    <span class="close-lightbox" id="lightboxClose"><i class="fas fa-times"></i></span>
                     <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
                     <div class="lightbox-container">
-                        <img id="lightboxImg" class="lightbox-img" src="">
+                        <img id="lightboxImage" class="lightbox-img" src="">
                     </div>
-                    <button class="lightbox-arrow lightbox-arrow-left" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
-                    <button class="lightbox-arrow lightbox-arrow-right" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
+                    <button class="lightbox-arrow lightbox-arrow-left" id="lightboxPrevBtn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="lightbox-arrow lightbox-arrow-right" id="lightboxNextBtn"><i class="fas fa-chevron-right"></i></button>
                 `;
-                document.body.appendChild(lightbox);
+                document.body.appendChild(lightboxDiv);
+                
+                // Add event listeners
+                document.getElementById("lightboxClose").onclick = closeLightbox;
+                document.getElementById("lightboxPrevBtn").onclick = prevLightboxImage;
+                document.getElementById("lightboxNextBtn").onclick = nextLightboxImage;
+                lightboxDiv.onclick = (e) => { if(e.target === lightboxDiv) closeLightbox(); };
             }
         }
-
-        // Show fullscreen gallery with arrows
-        function showFullGallery(images, startIndex) {
+        
+        function openLightbox(images, startIndex) {
             if (!images || images.length === 0) return;
             
-            createLightboxIfNotExists();
+            ensureLightboxExists();
             
             currentLightboxImages = images;
             currentLightboxIndex = startIndex;
             
+            updateLightboxImage();
+            
             const lightbox = document.getElementById("globalLightbox");
-            const lightboxImg = document.getElementById("lightboxImg");
-            const counter = document.getElementById("lightboxCounter");
-            const prevBtn = document.getElementById("lightboxPrev");
-            const nextBtn = document.getElementById("lightboxNext");
-            const closeBtn = document.querySelector(".close-lightbox");
-            
-            const updateImage = () => {
-                lightboxImg.src = currentLightboxImages[currentLightboxIndex];
-                counter.innerText = `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
-            };
-            
-            const nextImage = (e) => {
-                if (e) e.stopPropagation();
-                if (currentLightboxImages.length <= 1) return;
-                currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
-                updateImage();
-            };
-            
-            const prevImage = (e) => {
-                if (e) e.stopPropagation();
-                if (currentLightboxImages.length <= 1) return;
-                currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
-                updateImage();
-            };
-            
-            const closeLightbox = () => {
-                lightbox.classList.remove("active");
-            };
-            
-            prevBtn.onclick = prevImage;
-            nextBtn.onclick = nextImage;
-            closeBtn.onclick = closeLightbox;
-            lightbox.onclick = (e) => { if(e.target === lightbox) closeLightbox(); };
-            
-            updateImage();
             lightbox.classList.add("active");
+            
+            // Add keyboard events
+            document.addEventListener("keydown", lightboxKeyHandler);
         }
+        
+        function updateLightboxImage() {
+            const img = document.getElementById("lightboxImage");
+            const counter = document.getElementById("lightboxCounter");
+            if (img && counter) {
+                img.src = currentLightboxImages[currentLightboxIndex];
+                counter.innerText = `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
+            }
+        }
+        
+        function nextLightboxImage() {
+            if (currentLightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+            updateLightboxImage();
+        }
+        
+        function prevLightboxImage() {
+            if (currentLightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+            updateLightboxImage();
+        }
+        
+        function closeLightbox() {
+            const lightbox = document.getElementById("globalLightbox");
+            if (lightbox) lightbox.classList.remove("active");
+            document.removeEventListener("keydown", lightboxKeyHandler);
+        }
+        
+        function lightboxKeyHandler(e) {
+            if (e.key === "ArrowRight") nextLightboxImage();
+            if (e.key === "ArrowLeft") prevLightboxImage();
+            if (e.key === "Escape") closeLightbox();
+        }
+        
+        // Make functions global
+        window.openLightbox = openLightbox;
 
         async function handleImageUpload(files) {
             if (tempOptimizedImages.length + files.length > MAX_IMAGES) {
@@ -1054,7 +1072,7 @@
             if (minRent) { let mn = parseFloat(minRent); if (!isNaN(mn)) filtered = filtered.filter(h => h.rent >= mn); }
             if (maxRent) { let mx = parseFloat(maxRent); if (!isNaN(mx)) filtered = filtered.filter(h => h.rent <= mx); }
 
-            // Preview HTML
+            // Preview HTML for form
             const previewHtml = tempOptimizedImages.length > 0 ? `
                 <div class="image-preview-grid">
                     ${tempOptimizedImages.map((img, idx) => `
@@ -1112,7 +1130,7 @@
                                 return `
                                 <div class="house-card">
                                     <div class="image-gallery">
-                                        <div class="gallery-main" onclick="showFullGallery(${JSON.stringify(images)}, 0)">
+                                        <div class="gallery-main" onclick="openLightbox(${JSON.stringify(images)}, 0)">
                                             <img src="${images[0]}" alt="house" id="main-img-${house.id}">
                                         </div>
                                         ${images.length > 1 ? `
@@ -1120,7 +1138,9 @@
                                             <button class="nav-arrow nav-right" id="right-arrow-${house.id}" onclick="event.stopPropagation();"><i class="fas fa-chevron-right"></i></button>
                                             <div class="image-counter" id="counter-${house.id}">1 / ${images.length}</div>
                                         ` : ''}
-                                        <div class="gallery-nav" onclick="event.stopPropagation(); showFullGallery(${JSON.stringify(images)}, 0)"><i class="fas fa-expand"></i> সব ছবি</div>
+                                        <div class="gallery-nav" onclick="event.stopPropagation(); openLightbox(${JSON.stringify(images)}, 0)">
+                                            <i class="fas fa-expand"></i> সব ছবি দেখুন (${images.length})
+                                        </div>
                                     </div>
                                     <div class="house-details">
                                         <div class="house-title">${escapeHtml(house.title)}</div>
@@ -1159,7 +1179,7 @@
                 <div class="welcome-message">
                     <h2><i class="fas fa-home"></i> HomeFinder BD তে স্বাগতম!</h2>
                     <p>"নতুন লিস্টিং" বাটনে ক্লিক করে প্রথম লিস্টিং তৈরি করুন</p>
-                    <p>📸 ছবিতে ক্লিক করে বড় করে দেখুন | ◀ ▶ তীর চিহ্ন দিয়ে ছবি বদলান | 🔲 সব ছবি বাটনে ক্লিক করুন</p>
+                    <p>📸 ছবিতে ক্লিক করে বড় করে দেখুন | 🔲 সব ছবি বাটনে ক্লিক করে সব ছবি দেখুন</p>
                 </div>
             ` : "";
 
@@ -1186,7 +1206,7 @@
                                     ${isMine ? '<div class="my-listing-badge"><i class="fas fa-user-check"></i> আপনার লিস্টিং</div>' : ''}
                                     <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${house.id}"><i class="fas fa-heart"></i></button>
                                     <div class="image-gallery">
-                                        <div class="gallery-main" onclick="showFullGallery(${JSON.stringify(images)}, 0)">
+                                        <div class="gallery-main" onclick="openLightbox(${JSON.stringify(images)}, 0)">
                                             <img src="${images[0]}" alt="house" id="main-img-${house.id}">
                                         </div>
                                         ${images.length > 1 ? `
@@ -1194,7 +1214,9 @@
                                             <button class="nav-arrow nav-right" id="right-arrow-${house.id}" onclick="event.stopPropagation();"><i class="fas fa-chevron-right"></i></button>
                                             <div class="image-counter" id="counter-${house.id}">1 / ${images.length}</div>
                                         ` : ''}
-                                        <div class="gallery-nav" onclick="event.stopPropagation(); showFullGallery(${JSON.stringify(images)}, 0)"><i class="fas fa-expand"></i> সব ছবি</div>
+                                        <div class="gallery-nav" onclick="event.stopPropagation(); openLightbox(${JSON.stringify(images)}, 0)">
+                                            <i class="fas fa-expand"></i> সব ছবি দেখুন (${images.length})
+                                        </div>
                                     </div>
                                     <div class="house-details">
                                         <div class="house-title">${escapeHtml(house.title)}</div>
@@ -1236,8 +1258,8 @@
             
             document.getElementById("app").innerHTML = fullHtml;
             
-            // Make showFullGallery available globally
-            window.showFullGallery = showFullGallery;
+            // Make openLightbox available globally
+            window.openLightbox = openLightbox;
             
             // Initialize gallery navigation for each house
             houses.forEach(house => {
@@ -1357,9 +1379,6 @@
             if (!str) return ""; 
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); 
         }
-        
-        // Make functions available globally
-        window.showFullGallery = showFullGallery;
         
         renderApp();
     </script>
