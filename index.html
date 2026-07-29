@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>HomeFinder BD | সম্পূর্ণ হাউজ ভাড়া প্ল্যাটফর্ম</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #d4eaff 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #0a3d2f;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            color: white;
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+        .logo i {
+            color: #4cd964;
+            margin-right: 8px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .nav-links button {
+            background: #1f6e43;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .nav-links button:hover {
+            background: #2c8b5a;
+            transform: translateY(-2px);
+        }
+        .logout-btn {
+            background: #c0392b !important;
+        }
+        .user-badge {
+            color: white;
+            background: #2c8b5a;
+            padding: 6px 15px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+        .active-nav {
+            background: #0284c7 !important;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .stat-card i {
+            font-size: 2rem;
+            color: #0f766e;
+        }
+        .stat-card h3 {
+            margin: 10px 0;
+            color: #0a3d2f;
+        }
+
+        .filter-bar {
+            background: white;
+            border-radius: 60px;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .search-box {
+            flex: 2;
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 50px;
+            padding: 0.3rem 1rem;
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px;
+            outline: none;
+        }
+        .rent-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .rent-filter input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 30px;
+            outline: none;
+        }
+        .filter-bar button {
+            background: #0f766e;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .form-title {
+            font-size: 1.4rem;
+            color: #0a3d2f;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid #2c9b77;
+            padding-left: 1rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #1f4e3a;
+        }
+        .input-group input, .input-group textarea {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e6;
+            border-radius: 20px;
+            outline: none;
+        }
+        
+        .multi-image-section {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        .upload-area {
+            border: 2px dashed #cbd5e6;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+        }
+        .upload-area:hover {
+            border-color: #0f766e;
+            background: #f0fdf4;
+        }
+        .upload-icon {
+            font-size: 2.5rem;
+            color: #0f766e;
+            margin-bottom: 10px;
+        }
+        .image-preview-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .preview-card {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+        }
+        .preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .remove-img-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: #0a3d2f;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .btn-edit {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .houses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+        .house-card {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: 0.25s;
+            position: relative;
+        }
+        .house-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .image-gallery {
+            position: relative;
+            height: 220px;
+            background: #e2e8f0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .gallery-main {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gallery-nav {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .gallery-nav:hover {
+            background: rgba(0,0,0,0.9);
+            transform: scale(1.02);
+        }
+        .image-counter {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            z-index: 5;
+        }
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .nav-arrow:hover {
+            background: rgba(0,0,0,0.8);
+        }
+        .nav-left { left: 8px; }
+        .nav-right { right: 8px; }
+        
+        .house-details {
+            padding: 1rem;
+        }
+        .house-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0a3d2f;
+        }
+        .rent-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #0284c7;
+            margin: 5px 0;
+        }
+        .description-text {
+            color: #475569;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin: 8px 0;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
+            font-size: 0.85rem;
+            color: #2c4f3a;
+        }
+        .info-row i {
+            width: 20px;
+            color: #0f766e;
+        }
+        .lister-badge {
+            background: #e0f2fe;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .call-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            color: #dc2626;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .favorite-btn.active {
+            background: #dc2626;
+            color: white;
+        }
+        .my-listing-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #0f766e;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            z-index: 10;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 28px;
+        }
+        .welcome-message {
+            text-align: center;
+            padding: 3rem;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-radius: 28px;
+            margin-bottom: 2rem;
+        }
+
+        /* Lightbox Modal - Fixed & Enhanced */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.96);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.25s ease;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+        .lightbox.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .lightbox-container {
+            position: relative;
+            width: 90%;
+            height: 85%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-img {
+            max-width: 95%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            z-index: 10001;
+            background: rgba(0,0,0,0.6);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .close-lightbox:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        .lightbox-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10001;
+            font-size: 1.8rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-arrow:hover {
+            background: #0f766e;
+            transform: translateY(-50%) scale(1.08);
+        }
+        .lightbox-arrow-left { left: 25px; }
+        .lightbox-arrow-right { right: 25px; }
+        .lightbox-counter {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 1rem;
+            z-index: 10001;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Auth Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .auth-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 450px;
+        }
+        .auth-card h2 {
+            color: #0a3d2f;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .auth-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #cbd5e1;
+            border-radius: 40px;
+            outline: none;
+        }
+        .auth-card button {
+            width: 100%;
+            background: #0a3d2f;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .toggle-auth {
+            text-align: center;
+            margin-top: 1rem;
+            color: #0f766e;
+            cursor: pointer;
+        }
+        .error-msg {
+            color: #dc2626;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #1f5e46;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .filter-bar {
+                flex-direction: column;
+            }
+            .lightbox-arrow {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            .lightbox-arrow-left { left: 8px; }
+            .lightbox-arrow-right { right: 8px; }
+            .lightbox-counter {
+                font-size: 0.8rem;
+                padding: 6px 14px;
+                bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // ========== STORAGE KEYS ==========
+        const STORAGE_USERS = "homefinder_users";
+        const STORAGE_CURRENT_USER = "homefinder_current_user";
+        const STORAGE_HOUSES = "homefinder_houses";
+        const STORAGE_FAVORITES = "homefinder_favorites";
+
+        // ========== DEFAULT DATA ==========
+        const DEFAULT_USERS = [
+            { id: 1, name: "রহিম মিয়া", username: "rahim", password: "1234", email: "rahim@example.com", phone: "01712345678" }
+        ];
+        const DEFAULT_HOUSES = [];
+
+        const MAX_IMAGES = 10;
+        const MAX_IMAGE_SIZE_MB = 1.8;
+
+        function resizeImage(file, maxWidth = 600, maxHeight = 450, quality = 0.6) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = Math.round(height * (maxWidth / width));
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = Math.round(width * (maxHeight / height));
+                                height = maxHeight;
+                            }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const reducedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                        resolve(reducedDataUrl);
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
+        }
+
+        function loadUsers() {
+            const stored = localStorage.getItem(STORAGE_USERS);
+            if (stored) return JSON.parse(stored);
+            localStorage.setItem(STORAGE_USERS, JSON.stringify(DEFAULT_USERS));
+            return [...DEFAULT_USERS];
+        }
+        function saveUsers(users) { localStorage.setItem(STORAGE_USERS, JSON.stringify(users)); }
+        function getCurrentUser() {
+            const user = localStorage.getItem(STORAGE_CURRENT_USER);
+            return user ? JSON.parse(user) : null;
+        }
+        function setCurrentUser(user) {
+            if (user) localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(user));
+            else localStorage.removeItem(STORAGE_CURRENT_USER);
+        }
+        function loadHouses() {
+            const stored = localStorage.getItem(STORAGE_HOUSES);
+            if (stored) return JSON.parse(stored);
+            localStorage.setItem(STORAGE_HOUSES, JSON.stringify(DEFAULT_HOUSES));
+            return [...DEFAULT_HOUSES];
+        }
+        function saveHouses(houses) {
+            try {
+                localStorage.setItem(STORAGE_HOUSES, JSON.stringify(houses));
+                return true;
+            } catch (error) {
+                if (error.name === 'QuotaExceededError') {
+                    alert("স্টোরেজ ফুল! দয়া করে কিছু পুরনো লিস্টিং ডিলিট করুন।");
+                    return false;
+                }
+                throw error;
+            }
+        }
+        function loadFavorites() { 
+            const fav = localStorage.getItem(STORAGE_FAVORITES);
+            return fav ? JSON.parse(fav) : []; 
+        }
+        function saveFavorites(fav) { localStorage.setItem(STORAGE_FAVORITES, JSON.stringify(fav)); }
+
+        function registerUser(name, username, password, email, phone) {
+            const users = loadUsers();
+            if (users.find(u => u.username === username)) return false;
+            const newUser = { id: Date.now(), name, username, password, email, phone };
+            users.push(newUser);
+            saveUsers(users);
+            return true;
+        }
+        function loginUser(username, password) {
+            const users = loadUsers();
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                setCurrentUser({ id: user.id, name: user.name, username: user.username, email: user.email, phone: user.phone });
+                return true;
+            }
+            return false;
+        }
+        function logout() { setCurrentUser(null); renderApp(); }
+        function updateProfile(currentUser, newData) {
+            const users = loadUsers();
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = { ...users[userIndex], ...newData };
+                saveUsers(users);
+                setCurrentUser({ ...currentUser, ...newData });
+                renderApp();
+                return true;
+            }
+            return false;
+        }
+        async function addHouse(houseData, currentUser) {
+            const houses = loadHouses();
+            const newHouse = {
+                id: Date.now(),
+                title: houseData.title,
+                rent: parseFloat(houseData.rent),
+                location: houseData.location,
+                rooms: parseInt(houseData.rooms),
+                description: houseData.description || "বাড়ি ভাড়া দেওয়া হবে",
+                phone: houseData.phone,
+                listerId: currentUser.id,
+                listerName: currentUser.name,
+                whatsapp: houseData.whatsapp,
+                images: houseData.images && houseData.images.length ? houseData.images : []
+            };
+            houses.push(newHouse);
+            const saved = saveHouses(houses);
+            if (saved) alert("✅ নতুন লিস্টিং সফলভাবে তৈরি হয়েছে!");
+            renderApp();
+            return newHouse;
+        }
+        async function updateHouse(houseId, updatedData, currentUser) {
+            const houses = loadHouses();
+            const houseIndex = houses.findIndex(h => h.id === houseId);
+            if (houseIndex !== -1 && houses[houseIndex].listerId === currentUser.id) {
+                houses[houseIndex] = { ...houses[houseIndex], ...updatedData };
+                const saved = saveHouses(houses);
+                if (saved) alert("✅ লিস্টিং আপডেট হয়েছে!");
+                renderApp();
+                return true;
+            }
+            return false;
+        }
+        function deleteHouse(houseId, currentUser) {
+            const houses = loadHouses();
+            const house = houses.find(h => h.id === houseId);
+            if (house && house.listerId === currentUser.id && confirm("আপনি কি এই লিস্টিং ডিলিট করতে চান?")) {
+                const updated = houses.filter(h => h.id !== houseId);
+                saveHouses(updated);
+                let favs = loadFavorites();
+                favs = favs.filter(id => id !== houseId);
+                saveFavorites(favs);
+                renderApp();
+                alert("✅ লিস্টিং ডিলিট করা হয়েছে!");
+                return true;
+            }
+            return false;
+        }
+        function toggleFavorite(houseId) {
+            let favs = loadFavorites();
+            if (favs.includes(houseId)) favs = favs.filter(id => id !== houseId);
+            else favs.push(houseId);
+            saveFavorites(favs);
+            renderApp();
+        }
+
+        // ========== LIGHTBOX SYSTEM (fully fixed) ==========
+        let activeLightboxImages = [];
+        let activeLightboxIndex = 0;
+        let lightboxModal = null;
+
+        function buildLightboxModal() {
+            if (document.getElementById("globalLightboxFixed")) return;
+            const div = document.createElement("div");
+            div.id = "globalLightboxFixed";
+            div.className = "lightbox";
+            div.innerHTML = `
+                <div class="close-lightbox" id="lightboxCloseBtn"><i class="fas fa-times"></i></div>
+                <div class="lightbox-container">
+                    <img id="lightboxMainImage" class="lightbox-img" src="" alt="প্রিভিউ">
+                </div>
+                <button class="lightbox-arrow lightbox-arrow-left" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
+                <button class="lightbox-arrow lightbox-arrow-right" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
+                <div class="lightbox-counter" id="lightboxCounterText">1 / 1</div>
+            `;
+            document.body.appendChild(div);
+            lightboxModal = div;
+            document.getElementById("lightboxCloseBtn").onclick = closeLightbox;
+            document.getElementById("lightboxPrev").onclick = () => navigateLightbox(-1);
+            document.getElementById("lightboxNext").onclick = () => navigateLightbox(1);
+            lightboxModal.onclick = (e) => { if (e.target === lightboxModal) closeLightbox(); };
+        }
+
+        function openLightbox(images, startIndex = 0) {
+            if (!images || images.length === 0) return;
+            buildLightboxModal();
+            activeLightboxImages = [...images];
+            activeLightboxIndex = Math.min(startIndex, activeLightboxImages.length - 1);
+            updateLightboxDisplay();
+            lightboxModal.classList.add("active");
+            document.body.style.overflow = "hidden";
+            document.addEventListener("keydown", lightboxKeyHandler);
+        }
+
+        function updateLightboxDisplay() {
+            const imgElem = document.getElementById("lightboxMainImage");
+            const counterElem = document.getElementById("lightboxCounterText");
+            if (imgElem && activeLightboxImages[activeLightboxIndex]) {
+                imgElem.src = activeLightboxImages[activeLightboxIndex];
+            }
+            if (counterElem) {
+                counterElem.innerText = `${activeLightboxIndex + 1} / ${activeLightboxImages.length}`;
+            }
+        }
+
+        function navigateLightbox(delta) {
+            if (activeLightboxImages.length === 0) return;
+            activeLightboxIndex = (activeLightboxIndex + delta + activeLightboxImages.length) % activeLightboxImages.length;
+            updateLightboxDisplay();
+        }
+
+        function closeLightbox() {
+            if (lightboxModal) lightboxModal.classList.remove("active");
+            document.body.style.overflow = "";
+            document.removeEventListener("keydown", lightboxKeyHandler);
+        }
+
+        function lightboxKeyHandler(e) {
+            if (e.key === "ArrowRight") navigateLightbox(1);
+            if (e.key === "ArrowLeft") navigateLightbox(-1);
+            if (e.key === "Escape") closeLightbox();
+        }
+
+        window.openLightbox = openLightbox;
+
+        // Image upload helpers for listing form
+        let tempOptimizedImages = [];
+        let showListingForm = false;
+        let editingHouse = null;
+        let currentPage = "home";
+        let searchLocation = "", minRent = "", maxRent = "";
+        let isLoginMode = true;
+        let authError = "";
+
+        async function handleImageUpload(files) {
+            if (tempOptimizedImages.length + files.length > MAX_IMAGES) {
+                alert(`সর্বোচ্চ ${MAX_IMAGES} টি ছবি আপলোড করতে পারবেন!`);
+                return false;
+            }
+            for (const file of files) {
+                const sizeInMB = file.size / (1024 * 1024);
+                if (sizeInMB > MAX_IMAGE_SIZE_MB) {
+                    alert(`"${file.name}" খুব বড় (${sizeInMB.toFixed(1)}MB)। ${MAX_IMAGE_SIZE_MB}MB এর কম ছবি নির্বাচন করুন।`);
+                    return false;
+                }
+            }
+            for (const file of files) {
+                const optimized = await resizeImage(file, 600, 450, 0.6);
+                tempOptimizedImages.push(optimized);
+            }
+            renderApp();
+            return true;
+        }
+
+        function removeImageAtIndex(index) {
+            tempOptimizedImages.splice(index, 1);
+            renderApp();
+        }
+
+        function renderApp() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                renderAuthScreen();
+                return;
+            }
+            renderMainApp(currentUser);
+        }
+
+        function renderAuthScreen() {
+            const appDiv = document.getElementById("app");
+            appDiv.innerHTML = `
+                <div class="modal-overlay">
+                    <div class="auth-card">
+                        <h2><i class="fas fa-home"></i> HomeFinder BD</h2>
+                        <h3 style="text-align:center;">${isLoginMode ? "লগইন করুন" : "নতুন অ্যাকাউন্ট"}</h3>
+                        ${isLoginMode ? `
+                            <input type="text" id="loginUsername" placeholder="ইউজারনেম">
+                            <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড">
+                            <button id="submitAuthBtn">লগইন</button>
+                            <div class="toggle-auth" id="toggleAuthMode">নতুন ইউজার? রেজিস্টার করুন</div>
+                        ` : `
+                            <input type="text" id="regName" placeholder="আপনার নাম">
+                            <input type="text" id="regUsername" placeholder="ইউজারনেম">
+                            <input type="password" id="regPassword" placeholder="পাসওয়ার্ড">
+                            <input type="email" id="regEmail" placeholder="ইমেইল">
+                            <input type="tel" id="regPhone" placeholder="মোবাইল নম্বর">
+                            <button id="submitAuthBtn">রেজিস্টার</button>
+                            <div class="toggle-auth" id="toggleAuthMode">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন</div>
+                        `}
+                        <div class="error-msg">${authError}</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById("submitAuthBtn")?.addEventListener("click", () => {
+                if (isLoginMode) {
+                    const username = document.getElementById("loginUsername").value.trim();
+                    const password = document.getElementById("loginPassword").value.trim();
+                    if (loginUser(username, password)) renderApp();
+                    else { authError = "ভুল ইউজারনেম বা পাসওয়ার্ড!"; renderAuthScreen(); }
+                } else {
+                    const name = document.getElementById("regName").value.trim();
+                    const username = document.getElementById("regUsername").value.trim();
+                    const password = document.getElementById("regPassword").value.trim();
+                    const email = document.getElementById("regEmail").value.trim();
+                    const phone = document.getElementById("regPhone").value.trim();
+                    if (!name || !username || !password) { authError = "সব তথ্য পূরণ করুন!"; renderAuthScreen(); return; }
+                    if (registerUser(name, username, password, email, phone)) { loginUser(username, password); renderApp(); }
+                    else { authError = "ইউজারনেম ইতিমধ্যে নেওয়া হয়েছে!"; renderAuthScreen(); }
+                }
+            });
+            document.getElementById("toggleAuthMode")?.addEventListener("click", () => { isLoginMode = !isLoginMode; authError = ""; renderAuthScreen(); });
+        }
+
+        function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+
+        function renderMainApp(currentUser) {
+            const houses = loadHouses();
+            const favorites = loadFavorites();
+            const myListings = houses.filter(h => h.listerId === currentUser.id);
+            let filtered = [...houses];
+            if (searchLocation.trim()) filtered = filtered.filter(h => h.location.toLowerCase().includes(searchLocation.toLowerCase()));
+            if (minRent) { let mn = parseFloat(minRent); if (!isNaN(mn)) filtered = filtered.filter(h => h.rent >= mn); }
+            if (maxRent) { let mx = parseFloat(maxRent); if (!isNaN(mx)) filtered = filtered.filter(h => h.rent <= mx); }
+
+            const previewHtml = tempOptimizedImages.length ? `<div class="image-preview-grid">${tempOptimizedImages.map((img, idx) => `<div class="preview-card"><img src="${img}"><button class="remove-img-btn" data-index="${idx}">✕</button></div>`).join('')}</div><div style="color:#0f766e; margin-top:8px;">${tempOptimizedImages.length} টি ছবি নির্বাচিত</div>` : "";
+
+            const listingFormHtml = (showListingForm || editingHouse) ? `
+                <div class="form-card">
+                    <div class="form-title">${editingHouse ? "✏️ লিস্টিং এডিট করুন" : "➕ নতুন লিস্টিং"}</div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>শিরোনাম *</label><input type="text" id="editTitle" value="${editingHouse ? escapeHtml(editingHouse.title) : ''}"></div>
+                        <div class="input-group"><label>ভাড়া (৳) *</label><input type="number" id="editRent" value="${editingHouse ? editingHouse.rent : ''}"></div>
+                        <div class="input-group"><label>অবস্থান *</label><input type="text" id="editLocation" value="${editingHouse ? escapeHtml(editingHouse.location) : ''}"></div>
+                        <div class="input-group"><label>রুম সংখ্যা *</label><input type="number" id="editRooms" value="${editingHouse ? editingHouse.rooms : ''}"></div>
+                        <div class="input-group"><label>মোবাইল *</label><input type="tel" id="editPhone" value="${editingHouse ? editingHouse.phone : (currentUser.phone || '')}"></div>
+                        <div class="input-group"><label>হোয়াটসঅ্যাপ *</label><input type="tel" id="editWhatsapp" value="${editingHouse ? editingHouse.whatsapp : ''}"></div>
+                        <div class="input-group"><label>বিবরণ *</label><textarea id="editDesc" rows="3">${editingHouse ? escapeHtml(editingHouse.description) : ''}</textarea></div>
+                    </div>
+                    <div class="multi-image-section">
+                        <label>🖼️ ছবি আপলোড (সর্বোচ্চ ${MAX_IMAGES} টি)</label>
+                        <div class="upload-area" id="multiUploadArea"><div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div><p>ছবি আপলোড করতে ক্লিক করুন</p><input type="file" id="multiImageInput" multiple accept="image/*" style="display:none"></div>
+                        ${previewHtml}
+                    </div>
+                    <button id="saveListingBtn" class="btn-primary">${editingHouse ? "আপডেট করুন" : "লিস্টিং তৈরি করুন"}</button>
+                    <button id="cancelListingBtn" class="btn-secondary">বাতিল করুন</button>
+                </div>
+            ` : "";
+
+            const homeHtml = `
+                <div class="filter-bar">
+                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="অবস্থান..." value="${escapeHtml(searchLocation)}"></div>
+                    <div class="rent-filter"><input type="number" id="minRentInput" placeholder="ন্যূনতম" value="${minRent}"><span>-</span><input type="number" id="maxRentInput" placeholder="সর্বোচ্চ" value="${maxRent}"></div>
+                    <button id="filterBtn"><i class="fas fa-filter"></i> ফিল্টার</button>
+                </div>
+                <div class="houses-grid">
+                    ${filtered.length === 0 ? '<div class="empty-message">🔍 কোনো বাড়ি পাওয়া যায়নি</div>' :
+                        filtered.map(house => {
+                            const isFav = favorites.includes(house.id);
+                            const isMine = house.listerId === currentUser.id;
+                            const images = house.images && house.images.length ? house.images : ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500&h=300&fit=crop"];
+                            return `<div class="house-card">
+                                ${isMine ? '<div class="my-listing-badge"><i class="fas fa-user-check"></i> আপনার লিস্টিং</div>' : ''}
+                                <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${house.id}"><i class="fas fa-heart"></i></button>
+                                <div class="image-gallery" data-images='${JSON.stringify(images)}'>
+                                    <div class="gallery-main" data-img-index="0"><img src="${images[0]}" class="house-main-img" data-house="${house.id}"></div>
+                                    ${images.length > 1 ? `<button class="nav-arrow nav-left" data-house="${house.id}" data-dir="left"><i class="fas fa-chevron-left"></i></button><button class="nav-arrow nav-right" data-house="${house.id}" data-dir="right"><i class="fas fa-chevron-right"></i></button><div class="image-counter" data-house="${house.id}">1 / ${images.length}</div>` : ''}
+                                    <div class="gallery-nav" data-house="${house.id}" data-all='${JSON.stringify(images)}'><i class="fas fa-expand"></i> সব ছবি দেখুন (${images.length})</div>
+                                </div>
+                                <div class="house-details">
+                                    <div class="house-title">${escapeHtml(house.title)}</div>
+                                    <div class="rent-price">৳ ${house.rent.toLocaleString()}</div>
+                                    <div class="info-row"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(house.location)}</div>
+                                    <div class="info-row"><i class="fas fa-door-open"></i> ${house.rooms} টি রুম</div>
+                                    <div class="description-text">${escapeHtml(house.description)}</div>
+                                    <div class="lister-badge"><i class="fas fa-user"></i> ${escapeHtml(house.listerName)}</div>
+                                    <div class="action-buttons">
+                                        <button class="whatsapp-btn" data-whatsapp="${house.whatsapp || house.phone}" data-title="${escapeHtml(house.title)}" data-location="${escapeHtml(house.location)}"><i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ</button>
+                                        <button class="call-btn" data-phone="${house.phone}"><i class="fas fa-phone"></i> কল করুন</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')
+                    }
+                </div>
+            `;
+
+            const fullHtml = `
+                <nav class="navbar"><div class="logo"><i class="fas fa-home"></i> HomeFinder BD</div><div class="nav-links"><span class="user-badge"><i class="fas fa-user"></i> ${escapeHtml(currentUser.name)}</span><button id="navHome" class="${currentPage === 'home' ? 'active-nav' : ''}"><i class="fas fa-home"></i> হোম</button><button id="navDashboard" class="${currentPage === 'dashboard' ? 'active-nav' : ''}"><i class="fas fa-tachometer-alt"></i> ড্যাশবোর্ড</button><button id="navProfile" class="${currentPage === 'profile' ? 'active-nav' : ''}"><i class="fas fa-user-edit"></i> প্রোফাইল</button><button id="newListingBtn"><i class="fas fa-plus-circle"></i> লিস্টিং</button><button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> লগআউট</button></div></nav>
+                <div class="container">${listingFormHtml}${currentPage === "dashboard" ? `<div class="form-card"><div class="form-title">📋 আপনার লিস্টিং</div>${myListings.length === 0 ? '<div class="empty-message">📭 কোনো লিস্টিং নেই</div>' : `<div class="houses-grid">${myListings.map(h => `<div class="house-card"><div class="house-details"><div class="house-title">${escapeHtml(h.title)}</div><div class="rent-price">৳ ${h.rent}</div><div class="info-row">📍 ${escapeHtml(h.location)}</div><div class="action-buttons"><button class="btn-edit" data-id="${h.id}"><i class="fas fa-edit"></i> এডিট</button><button class="btn-danger" data-id="${h.id}"><i class="fas fa-trash"></i> ডিলিট</button></div></div></div>`).join('')}</div>`}</div>` : (currentPage === "profile" ? `<div class="form-card"><div class="form-title">👤 প্রোফাইল</div><div class="form-grid"><div class="input-group"><label>নাম</label><input type="text" id="profileName" value="${escapeHtml(currentUser.name)}"></div><div class="input-group"><label>ইমেইল</label><input type="email" id="profileEmail" value="${escapeHtml(currentUser.email || '')}"></div><div class="input-group"><label>মোবাইল</label><input type="tel" id="profilePhone" value="${escapeHtml(currentUser.phone || '')}"></div><div class="input-group"><label>নতুন পাসওয়ার্ড</label><input type="password" id="profilePassword" placeholder="খালি রাখুন"></div></div><button id="saveProfileBtn" class="btn-primary">আপডেট করুন</button></div>` : homeHtml)}</div>
+               <footer>© 2026 HomeFinder BD. All rights reserved. | Developed with <i class="fas fa-heart" style="color: #dc2626;"></i> for Bangladesh</footer>
+            `;
+            document.getElementById("app").innerHTML = fullHtml;
+            attachEvents(currentUser);
+            attachGalleryCarousels();
+        }
+
+        function attachGalleryCarousels() {
+            const houses = loadHouses();
+            houses.forEach(house => {
+                const images = house.images?.length ? house.images : ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500&h=300&fit=crop"];
+                let currentIdx = 0;
+                const mainImgElement = document.querySelector(`.house-main-img[data-house="${house.id}"]`);
+                const counterEl = document.querySelector(`.image-counter[data-house="${house.id}"]`);
+                const leftBtn = document.querySelector(`.nav-arrow[data-house="${house.id}"][data-dir="left"]`);
+                const rightBtn = document.querySelector(`.nav-arrow[data-house="${house.id}"][data-dir="right"]`);
+                const updateImg = () => { if (mainImgElement) mainImgElement.src = images[currentIdx]; if (counterEl) counterEl.innerText = `${currentIdx+1}/${images.length}`; };
+                if (leftBtn) leftBtn.onclick = (e) => { e.stopPropagation(); currentIdx = (currentIdx - 1 + images.length) % images.length; updateImg(); };
+                if (rightBtn) rightBtn.onclick = (e) => { e.stopPropagation(); currentIdx = (currentIdx + 1) % images.length; updateImg(); };
+                const galleryDiv = document.querySelector(`.image-gallery[data-images='${JSON.stringify(images)}']`);
+                if (galleryDiv) galleryDiv.querySelector('.gallery-main')?.addEventListener('click', () => openLightbox(images, currentIdx));
+                document.querySelector(`.gallery-nav[data-house="${house.id}"]`)?.addEventListener('click', (e) => { e.stopPropagation(); openLightbox(images, 0); });
+            });
+        }
+
+        function attachEvents(currentUser) {
+            document.getElementById("navHome")?.addEventListener("click", () => { currentPage = "home"; showListingForm = false; editingHouse = null; tempOptimizedImages = []; renderApp(); });
+            document.getElementById("navDashboard")?.addEventListener("click", () => { currentPage = "dashboard"; showListingForm = false; editingHouse = null; tempOptimizedImages = []; renderApp(); });
+            document.getElementById("navProfile")?.addEventListener("click", () => { currentPage = "profile"; showListingForm = false; editingHouse = null; tempOptimizedImages = []; renderApp(); });
+            document.getElementById("logoutBtn")?.addEventListener("click", () => logout());
+            document.getElementById("newListingBtn")?.addEventListener("click", () => { showListingForm = true; editingHouse = null; tempOptimizedImages = []; currentPage = "home"; renderApp(); });
+            document.getElementById("cancelListingBtn")?.addEventListener("click", () => { showListingForm = false; editingHouse = null; tempOptimizedImages = []; renderApp(); });
+            document.getElementById("filterBtn")?.addEventListener("click", () => { searchLocation = document.getElementById("searchInput")?.value || ""; minRent = document.getElementById("minRentInput")?.value || ""; maxRent = document.getElementById("maxRentInput")?.value || ""; renderApp(); });
+            const uploadArea = document.getElementById("multiUploadArea"), fileInput = document.getElementById("multiImageInput");
+            if (uploadArea && fileInput) { uploadArea.onclick = () => fileInput.click(); fileInput.onchange = async (e) => { await handleImageUpload(Array.from(e.target.files)); fileInput.value = ""; }; }
+            document.getElementById("saveListingBtn")?.addEventListener("click", async () => {
+                const title = document.getElementById("editTitle")?.value.trim(), rent = document.getElementById("editRent")?.value.trim(), location = document.getElementById("editLocation")?.value.trim(), rooms = document.getElementById("editRooms")?.value.trim(), phone = document.getElementById("editPhone")?.value.trim(), whatsapp = document.getElementById("editWhatsapp")?.value.trim(), desc = document.getElementById("editDesc")?.value.trim();
+                if (!title || !rent || !location || !rooms || !phone || !whatsapp || !desc) { alert("সব তথ্য পূরণ করুন!"); return; }
+                if (editingHouse) await updateHouse(editingHouse.id, { title, rent: parseFloat(rent), location, rooms: parseInt(rooms), phone, whatsapp, description: desc, images: tempOptimizedImages.length ? tempOptimizedImages : editingHouse.images }, currentUser);
+                else await addHouse({ title, rent, location, rooms, phone, whatsapp, description: desc, images: tempOptimizedImages }, currentUser);
+                showListingForm = false; editingHouse = null; tempOptimizedImages = []; renderApp();
+            });
+            document.getElementById("saveProfileBtn")?.addEventListener("click", () => { const name = document.getElementById("profileName")?.value.trim(), email = document.getElementById("profileEmail")?.value.trim(), phone = document.getElementById("profilePhone")?.value.trim(), password = document.getElementById("profilePassword")?.value.trim(); updateProfile(currentUser, { name, email, phone, ...(password && { password }) }); alert("✅ প্রোফাইল আপডেট হয়েছে!"); });
+            document.querySelectorAll(".favorite-btn").forEach(btn => btn.addEventListener("click", (e) => { e.stopPropagation(); toggleFavorite(parseInt(btn.dataset.id)); }));
+            document.querySelectorAll(".btn-edit").forEach(btn => btn.addEventListener("click", (e) => { const id = parseInt(btn.dataset.id); const house = loadHouses().find(h => h.id === id); if (house) { editingHouse = house; showListingForm = true; tempOptimizedImages = house.images || []; currentPage = "home"; renderApp(); } }));
+            document.querySelectorAll(".btn-danger").forEach(btn => btn.addEventListener("click", (e) => { deleteHouse(parseInt(btn.dataset.id), currentUser); }));
+            document.querySelectorAll(".whatsapp-btn").forEach(btn => btn.addEventListener("click", (e) => { const w = btn.dataset.whatsapp, t = btn.dataset.title, l = btn.dataset.location; let num = w.toString().replace(/\D/g,''); if (num.startsWith('0')) num='88'+num; if (!num.startsWith('88')) num='88'+num; window.open(`https://wa.me/${num}?text=${encodeURIComponent(`হ্যালো, আমি HomeFinder BD তে "${t}" (${l}) দেখেছি।`)}`,'_blank'); }));
+            document.querySelectorAll(".call-btn").forEach(btn => btn.addEventListener("click", () => { window.location.href = `tel:${btn.dataset.phone.replace(/\D/g,'')}`; }));
+            document.querySelectorAll(".remove-img-btn").forEach(btn => btn.addEventListener("click", (e) => { e.stopPropagation(); removeImageAtIndex(parseInt(btn.dataset.index)); }));
+            attachGalleryCarousels();
+        }
+        renderApp();
+    </script>
+</body>
+</html>
